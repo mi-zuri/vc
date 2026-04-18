@@ -127,6 +127,32 @@ export default function Dashboard() {
       .catch(() => setErr('Nie udało się pobrać pulpitu'));
   }, [volunteerId]);
 
+  const savePlanned = async (idea) => {
+    if (!data?.assignment) return;
+    try {
+      const res = await fetch('/api/planned-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assignment_id: data.assignment.id, ...idea }),
+      });
+      if (!res.ok) throw new Error('nie udało się zapisać');
+      const saved = await res.json();
+      setData(d => ({ ...d, planned: [saved, ...(d.planned || [])] }));
+      setIdeas(list => list.map(x => x === idea ? { ...x, _saved: true } : x));
+    } catch (e) {
+      setErr(e.message);
+    }
+  };
+
+  const removePlanned = async (id) => {
+    try {
+      await fetch(`/api/planned-ideas/${id}`, { method: 'DELETE' });
+      setData(d => ({ ...d, planned: (d.planned || []).filter(p => p.id !== id) }));
+    } catch (e) {
+      setErr('Nie udało się usunąć');
+    }
+  };
+
   const generate = async () => {
     if (!data?.assignment) return;
     setGenerating(true);
@@ -163,6 +189,7 @@ export default function Dashboard() {
   }
 
   const { senior, volunteer, assignment, visits } = data;
+  const planned = data.planned || [];
 
   return (
     <Shell>
@@ -269,7 +296,11 @@ export default function Dashboard() {
                       </div>
                       {idea.prep && <p className="prep"><strong>Co warto przygotować:</strong> {idea.prep}</p>}
                       <div className="ig-actions">
-                        <button type="button" className="btn btn-ghost" style={{ flex: 1 }}>Zapisz na następne</button>
+                        <button type="button" className="btn btn-ghost" style={{ flex: 1 }}
+                          disabled={idea._saved}
+                          onClick={() => savePlanned(idea)}>
+                          {idea._saved ? '✓ Zapisano' : 'Zapisz na następne'}
+                        </button>
                       </div>
                     </article>
                   ))}
@@ -295,10 +326,43 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              {visits.length === 0 && (
+              {planned.length > 0 && (
+                <div style={{ marginTop: 24 }}>
+                  <h4 style={{ fontFamily: 'var(--sans)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-mute)', fontWeight: 600, marginBottom: 12 }}>
+                    Zaplanowane na następne spotkania
+                  </h4>
+                  <div className="journal-list">
+                    {planned.map(p => (
+                      <div key={p.id} className="journal-item planned">
+                        <div className="date">
+                          <span style={{ color: 'var(--primary)' }}>◆ Zaplanowane</span>
+                          {p.duration && ` · ${p.duration}`}
+                        </div>
+                        <p style={{ fontWeight: 600, color: 'var(--ink)', marginTop: 4 }}>{p.title}</p>
+                        {p.description && <p style={{ marginTop: 6 }}>{p.description}</p>}
+                        {p.reasoning && <div className="anecdote">{p.reasoning}</div>}
+                        {p.prep && <p style={{ marginTop: 8, fontSize: 14 }}><strong>Przygotować:</strong> {p.prep}</p>}
+                        <button type="button" className="btn btn-ghost"
+                          style={{ marginTop: 12, padding: '6px 14px', fontSize: 13 }}
+                          onClick={() => removePlanned(p.id)}>
+                          Usuń z planu
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {visits.length === 0 && planned.length === 0 && (
                 <div className="journal-item" style={{ marginTop: 24, textAlign: 'center', color: 'var(--ink-mute)' }}>
                   Jeszcze nie ma wpisów. Po pierwszym spotkaniu dodaj krótką notatkę — co zapamiętać, co zrobić następnym razem.
                 </div>
+              )}
+
+              {visits.length > 0 && (
+                <h4 style={{ fontFamily: 'var(--sans)', fontSize: 12, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--ink-mute)', fontWeight: 600, margin: '32px 0 12px' }}>
+                  Odbyte spotkania
+                </h4>
               )}
 
               <div className="journal-list">

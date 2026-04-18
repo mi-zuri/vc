@@ -44,6 +44,18 @@ CREATE TABLE IF NOT EXISTS assignments (
   matched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS planned_ideas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  assignment_id UUID NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  description TEXT,
+  reasoning TEXT,
+  duration TEXT,
+  prep TEXT,
+  status TEXT NOT NULL DEFAULT 'planned',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS visits (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   assignment_id UUID NOT NULL REFERENCES assignments(id) ON DELETE CASCADE,

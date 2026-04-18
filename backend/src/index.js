@@ -147,12 +147,44 @@ app.get('/volunteers/:id/dashboard', async (req, res) => {
       'SELECT * FROM visits WHERE assignment_id=$1 ORDER BY date DESC',
       [a.rows[0].id]
     );
+    const planned = await pool.query(
+      "SELECT * FROM planned_ideas WHERE assignment_id=$1 AND status='planned' ORDER BY created_at DESC",
+      [a.rows[0].id]
+    );
     res.json({
       volunteer: v.rows[0],
       assignment: a.rows[0],
       senior: s.rows[0],
       visits: vis.rows,
+      planned: planned.rows,
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Planned ideas (saved inspirations for future meetings)
+app.post('/planned-ideas', async (req, res) => {
+  if (!requireDb(res)) return;
+  const { assignment_id, title, description, reasoning, duration, prep } = req.body || {};
+  if (!assignment_id || !title) return res.status(400).json({ error: 'missing-required-fields' });
+  try {
+    const { rows } = await pool.query(
+      `INSERT INTO planned_ideas (assignment_id, title, description, reasoning, duration, prep)
+       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
+      [assignment_id, title, description || null, reasoning || null, duration || null, prep || null]
+    );
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/planned-ideas/:id', async (req, res) => {
+  if (!requireDb(res)) return;
+  try {
+    await pool.query('DELETE FROM planned_ideas WHERE id=$1', [req.params.id]);
+    res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

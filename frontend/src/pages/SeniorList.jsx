@@ -2,8 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Shell } from '../components/Layout.jsx';
 
-function initials(name) {
-  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+function PortraitPlaceholder() {
+  return (
+    <div className="senior-placeholder" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 40 h34 v8 a6 6 0 0 1 -6 6 h-22 a6 6 0 0 1 -6 -6 z" />
+        <path d="M46 42 h5 a4 4 0 0 1 4 4 v0 a4 4 0 0 1 -4 4 h-5" />
+        <path d="M22 34 v-6 M30 34 v-6 M38 34 v-6" opacity="0.7" />
+        <path d="M8 58 h44" opacity="0.5" />
+      </svg>
+    </div>
+  );
 }
 
 function weeksSince(dateStr) {
@@ -130,18 +139,18 @@ export default function SeniorList() {
                   aria-pressed={on}
                 >
                   <div className="check" />
-                  <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-                    <div className="avatar">{initials(s.display_name)}</div>
+                  <PortraitPlaceholder />
+                  <div className="body">
                     <div>
                       <h3>{s.display_name}</h3>
                       <div className="meta">{s.age_range} · {s.city}{s.district ? `, ${s.district}` : ''}</div>
                     </div>
+                    <p className="desc">{s.short_description}</p>
+                    <div className="tags">
+                      {(s.interests || []).slice(0, 4).map(t => <span key={t}>{t}</span>)}
+                    </div>
+                    <div className="waiting">Czeka {weeksSince(s.waiting_since)} tygodni</div>
                   </div>
-                  <p className="desc">{s.short_description}</p>
-                  <div className="tags">
-                    {(s.interests || []).slice(0, 4).map(t => <span key={t}>{t}</span>)}
-                  </div>
-                  <div className="waiting">Czeka {weeksSince(s.waiting_since)} tygodni</div>
                 </article>
               );
             })}
