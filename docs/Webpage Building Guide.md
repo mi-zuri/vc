@@ -97,7 +97,7 @@ Wybraliśmy **monorepo**: frontend i backend w jednym repozytorium, w
 podkatalogach.
 
 ```
-vc/
+vibe-coding-championship-1/
 ├── README.md
 ├── docker-compose.yml
 ├── nginx.conf
@@ -127,9 +127,9 @@ vc/
 **Krok 1:**
 
 ```bash
-mkdir vc && cd vc
+mkdir vibe-coding-championship-1 && cd vibe-coding-championship-1
 git init
-gh repo create mi-zuri/vc --private --source=. --remote=origin
+gh repo create mi-zuri/vibe-coding-championship-1 --private --source=. --remote=origin
 ```
 
 `★ Insight ─────────────────────────────────────`

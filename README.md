@@ -16,8 +16,8 @@ Production: https://mi.zur-i.com
 **Requirements:** Docker, Node 20+, Git, `make`.
 
 ```bash
-git clone git@github.com:mi-zuri/vc.git
-cd vc
+git clone git@github.com:mi-zuri/vibe-coding-championship-1.git
+cd vibe-coding-championship-1
 make setup            # one-off: copies .env, installs deps, boots backend+db
 make dev-frontend     # Vite dev server on :5173
 ```
@@ -127,7 +127,7 @@ Deploy status: `gh run watch`.
 ## Structure
 
 ```
-vc/
+vibe-coding-championship-1/
 ├── Makefile                    # dev orchestration
 ├── docker-compose.yml          # backend + db
 ├── nginx.conf                  # prod reference (lives on the server)
