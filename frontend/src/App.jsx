@@ -12,7 +12,7 @@ export default function App() {
 
   return (
     <main>
-      <h1>mi.zur-i.com</h1>
+      <h1>vibe-coding-championship-1.zur-i.com</h1>
       <p>Placeholder page — real content coming soon.</p>
       <p>
         Backend health: <strong>{health}</strong>

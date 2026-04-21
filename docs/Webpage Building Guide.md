@@ -1,7 +1,7 @@
 # Jak zbudowaliśmy „Obecność" — poradnik od zera
 
 Ten dokument opisuje **każdy krok** potrzebny do zbudowania i wypchnięcia do
-internetu tej aplikacji: od pustego folderu do `https://mi.zur-i.com`. Przy
+internetu tej aplikacji: od pustego folderu do `https://vibe-coding-championship-1.zur-i.com`. Przy
 każdym kroku wyjaśnione jest **po co to robimy**, **co się stanie jeśli tego
 nie zrobimy** oraz **jakie są alternatywy**.
 
@@ -460,7 +460,7 @@ produkcji (lub odwrotnie).
   to miejsce gdzie bug się wkradnie cicho. Proxy z rewrite to prosty sposób
   żeby frontend mógł pisać `/api/*` wszędzie i nie myśleć.
 - Alternatywa: dodać `VITE_API_URL=http://localhost:3001` w dev i
-  `VITE_API_URL=https://mi.zur-i.com/api` w prod. Działa, ale rozsiewasz
+  `VITE_API_URL=https://vibe-coding-championship-1.zur-i.com/api` w prod. Działa, ale rozsiewasz
   ścieżki API po kodzie i trudniej je później zmienić.
 `─────────────────────────────────────────────────`
 
@@ -511,7 +511,7 @@ Efekt: każdy URL który nie jest API i nie jest konkretnym plikiem →
 <HashRouter>
 ```
 
-URL-e wyglądają jak `mi.zur-i.com/#/dashboard`. Wszystko po `#` przeglądarka
+URL-e wyglądają jak `vibe-coding-championship-1.zur-i.com/#/dashboard`. Wszystko po `#` przeglądarka
 traktuje jako fragment strony, więc F5 zawsze pyta o `/` i `index.html` jest
 serwowany.
 
@@ -553,11 +553,11 @@ Type   Name   Value
 A      mi     <IP EC2>
 ```
 
-Rekord A — subdomenę `mi.zur-i.com` wskazuje na IP EC2. Propagacja trwa
+Rekord A — subdomenę `vibe-coding-championship-1.zur-i.com` wskazuje na IP EC2. Propagacja trwa
 1-30 minut.
 
 **Co jeśli nie zrobisz DNS?** Musisz wpisywać `http://54.123.45.67` zamiast
-`mi.zur-i.com`. Brak HTTPS (certyfikaty nie dla raw IP).
+`vibe-coding-championship-1.zur-i.com`. Brak HTTPS (certyfikaty nie dla raw IP).
 
 ### 10.3 Hardening SSH
 
@@ -633,7 +633,7 @@ Nginx stoi na porcie 443, odbiera wszystkie requesty, i decyduje:
 ```nginx
 server {
     listen 80;
-    server_name mi.zur-i.com;
+    server_name vibe-coding-championship-1.zur-i.com;
 
     root /var/www/mi;
     index index.html;
@@ -675,11 +675,11 @@ Traci informację kto faktycznie zapytał. Nagłówki `X-Forwarded-*` to oddają
 ## 12. HTTPS z Let's Encrypt
 
 ```bash
-sudo certbot --nginx -d mi.zur-i.com
+sudo certbot --nginx -d vibe-coding-championship-1.zur-i.com
 ```
 
 Certbot:
-1. Sprawdza że serwer nasłuchuje na `mi.zur-i.com` (odpowiada na `.well-known/acme-challenge/...`).
+1. Sprawdza że serwer nasłuchuje na `vibe-coding-championship-1.zur-i.com` (odpowiada na `.well-known/acme-challenge/...`).
 2. Let's Encrypt wystawia certyfikat ważny 90 dni.
 3. Certbot **modyfikuje twój `/etc/nginx/sites-available/mi`** dodając
    `listen 443 ssl`, ścieżki do certyfikatu, i przekierowanie `80 → 443`.
@@ -719,7 +719,7 @@ miesięcznie dla prywatnych repo.
    ```
 2. Na serwerze dodaj klucz publiczny do `~/.ssh/authorized_keys` usera `michu`.
 3. W GitHubie: `Settings → Secrets and variables → Actions`:
-   - `EC2_HOST` = `mi.zur-i.com`
+   - `EC2_HOST` = `vibe-coding-championship-1.zur-i.com`
    - `EC2_USER` = `michu`
    - `EC2_SSH_KEY` = zawartość pliku `~/.ssh/deploy_key` (PRYWATNY, cały z
      `-----BEGIN…` do `-----END…`).
@@ -815,7 +815,7 @@ kroki.
 
 Ręczny deploy:
 ```bash
-ssh ubuntu@mi.zur-i.com
+ssh ubuntu@vibe-coding-championship-1.zur-i.com
 cd ~/app-mi && git pull && docker compose up -d --build && ...
 ```
 
@@ -859,7 +859,7 @@ litości.
 
 ### 14.3 Monitoring
 
-Minimum: **UptimeRobot** (darmowy) — pinguje `https://mi.zur-i.com/api/health`
+Minimum: **UptimeRobot** (darmowy) — pinguje `https://vibe-coding-championship-1.zur-i.com/api/health`
 co 5 min, wysyła email jak padnie.
 
 Pro: Grafana + Prometheus + `node_exporter` — wykresy CPU, RAM, ruchu.
@@ -921,7 +921,7 @@ Zamiast EC2 + ręcznego stacka:
 - [ ] Sklonuj repo do `~/app-mi`, wrzuć `.env`.
 - [ ] Napisz `nginx.conf`, symlinkuj do `sites-enabled`.
 - [ ] `sudo nginx -t && systemctl reload nginx`.
-- [ ] `sudo certbot --nginx -d mi.zur-i.com`.
+- [ ] `sudo certbot --nginx -d vibe-coding-championship-1.zur-i.com`.
 - [ ] Wygeneruj klucz deploy'owy SSH, dodaj do GitHub Secrets.
 - [ ] `.github/workflows/deploy.yml`.
 - [ ] `git push origin main` — pierwszy automatyczny deploy.
