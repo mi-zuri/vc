@@ -16,7 +16,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-            cd ~/app-vibe-coding-championship-1
+            cd ~/vibe-coding-championship-1
             git fetch origin main
             git reset --hard origin/main
             git clean -fd
